@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] float movementSpeed;
     [SerializeField] float angularSpeed;
+    [SerializeField] float touchSensitivity;
 
     [Space]
 
@@ -26,6 +27,7 @@ public class PlayerController : MonoBehaviour
     private List<BlockBehavior> carryBlocks = new List<BlockBehavior>();
 
     private bool playerIsDead = false;
+    private bool gameStarted = false;
 
     private void Awake()
     {
@@ -33,11 +35,20 @@ public class PlayerController : MonoBehaviour
         inputHandler = GetComponent<InputHandler>();
 
         Global.CheckGroundUnderAction += CheckGroundUnder;
+        Global.StartGameAction += StartGame;
     }
 
     private void OnDestroy()
     {
         Global.CheckGroundUnderAction -= CheckGroundUnder;
+        Global.StartGameAction -= StartGame;
+    }
+
+    private void StartGame()
+    {
+        gameStarted = true;
+
+        playerAnim.SetBool("running", true);
     }
 
     private void Update()
@@ -47,9 +58,14 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        if (!gameStarted)
+        {
+            return;
+        }
+
         transform.position += transform.forward * movementSpeed * Time.deltaTime;
 
-        targetRotation = Vector3.up * inputHandler.TouchRelative.x;
+        targetRotation = Vector3.up * inputHandler.TouchRelative.x * touchSensitivity;
 
         transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, transform.eulerAngles + targetRotation, angularSpeed * Time.deltaTime);
 
@@ -58,6 +74,16 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (playerIsDead)
+        {
+            return;
+        }
+
+        if (!gameStarted)
+        {
+            return;
+        }
+
         if (other.CompareTag("Ground"))
         {
             playerAnim.SetBool("jumping", false);
@@ -83,6 +109,16 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        if (playerIsDead)
+        {
+            return;
+        }
+
+        if (!gameStarted)
+        {
+            return;
+        }
+
         if (other.CompareTag("Ground"))
         {
             groundColCount--;
@@ -122,7 +158,7 @@ public class PlayerController : MonoBehaviour
 
     private void Die()
     {
-        playerAnim.Play("Player Die");
+        playerAnim.Play("Player Die", -1, 0);
         playerAnim.SetBool("jumping", false);
         playerAnim.SetBool("running", false);
 

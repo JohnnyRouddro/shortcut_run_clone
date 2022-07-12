@@ -7,11 +7,13 @@ public class Global : MonoBehaviour
 {
     public static Global Instance { get; private set; }
 
+    [SerializeField] GameObject levelStartUI;
     [SerializeField] GameObject levelFailedUI;
 
 
     public static Action LevelFailedAction;
     public static Action CheckGroundUnderAction;
+    public static Action StartGameAction;
 
 
     private void Awake()
@@ -36,5 +38,11 @@ public class Global : MonoBehaviour
     public void LevelRestart()
     {
         levelFailedUI.SetActive(false);
+    }
+
+    public void StartGame()
+    {
+        StartGameAction?.Invoke();
+        levelStartUI.SetActive(false);
     }
 }

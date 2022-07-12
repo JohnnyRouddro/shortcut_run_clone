@@ -15,6 +15,12 @@ public class BlockBehavior : MonoBehaviour
     [SerializeField] GameObject groundBlock;
     [SerializeField] GameObject carryBlock;
 
+    private Animator animator;
+
+    private void Awake()
+    {
+        animator = GetComponent<Animator>();
+    }
 
     public void SetMode(BlockMode blockMode)
     {
@@ -36,5 +42,7 @@ public class BlockBehavior : MonoBehaviour
             default:
                 break;
         }
+
+        animator.Play("pop", -1, 0);
     }
 }
