@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using JiRO;
 
 public class PlayerController : MonoBehaviour
 {
@@ -20,17 +21,32 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 targetRotation = Vector3.zero;
 
+    private int groundColCount = 0;
 
     private List<BlockBehavior> carryBlocks = new List<BlockBehavior>();
+
+    private bool playerIsDead = false;
 
     private void Awake()
     {
         rb = FindObjectOfType<Rigidbody>();
         inputHandler = GetComponent<InputHandler>();
+
+        Global.CheckGroundUnderAction += CheckGroundUnder;
+    }
+
+    private void OnDestroy()
+    {
+        Global.CheckGroundUnderAction -= CheckGroundUnder;
     }
 
     private void Update()
     {
+        if (playerIsDead)
+        {
+            return;
+        }
+
         transform.position += transform.forward * movementSpeed * Time.deltaTime;
 
         targetRotation = Vector3.up * inputHandler.TouchRelative.x;
@@ -46,6 +62,8 @@ public class PlayerController : MonoBehaviour
         {
             playerAnim.SetBool("jumping", false);
             playerAnim.SetBool("running", true);
+
+            groundColCount++;
         }
 
         if (other.CompareTag("PickupBlock"))
@@ -67,12 +85,16 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Ground"))
         {
-            if (carryBlocks.Count == 0)
+            groundColCount--;
+
+            groundColCount = Mathf.Max(groundColCount, 0);
+
+            if (carryBlocks.Count == 0 && groundColCount == 0)
             {
                 playerAnim.SetBool("running", false);
                 playerAnim.SetBool("jumping", true);
             }
-            else
+            else if (carryBlocks.Count > 0 && groundColCount == 0)
             {
                 BlockBehavior block = carryBlocks[carryBlocks.Count - 1];
 
@@ -86,7 +108,28 @@ public class PlayerController : MonoBehaviour
 
                 carryBlocks.RemoveAt(carryBlocks.Count - 1);
             }
-
         }
+    }
+
+
+    public void CheckGroundUnder()
+    {
+        if (groundColCount == 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        playerAnim.Play("Player Die");
+        playerAnim.SetBool("jumping", false);
+        playerAnim.SetBool("running", false);
+
+        playerIsDead = true;
+
+        Global.LevelFailedAction?.Invoke();
+
+        inputHandler.enabled = false;
     }
 }
