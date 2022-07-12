@@ -2940,8 +2940,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 262056427}
-  m_LocalRotation: {x: 0.12218325, y: 0.000000017077465, z: -0.0000000021023316, w: 0.9925076}
-  m_LocalPosition: {x: 0, y: 10, z: -16}
+  m_LocalRotation: {x: 0.23122501, y: 0.000000008370047, z: -0.000000001989273, w: 0.97290033}
+  m_LocalPosition: {x: 0, y: 19.3, z: -26.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4406,7 +4406,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 0, y: 10, z: -16}
+  m_FollowOffset: {x: 0, y: 19.3, z: -26.4}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
@@ -13853,7 +13853,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de7c00c8b0b3e254bb077f6601ac5f06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 15
+  vCam: {fileID: 0}
+  groundMovementSpeed: 15
+  bridgeMovementSpeed: 25
   angularSpeed: 15
   touchSensitivity: 0.25
   playerAnim: {fileID: 44488202}
@@ -15183,8 +15185,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1961809277}
-  m_LocalRotation: {x: 0.12218325, y: 0.000000017077465, z: -0.0000000021023316, w: 0.9925076}
-  m_LocalPosition: {x: 0, y: 10, z: -16}
+  m_LocalRotation: {x: 0.23122501, y: 0.000000008370047, z: -0.000000001989273, w: 0.97290033}
+  m_LocalPosition: {x: 0, y: 19.3, z: -26.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

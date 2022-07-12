@@ -1,11 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using JiRO;
+using Cinemachine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] float movementSpeed;
+    [SerializeField] private CinemachineVirtualCamera vCam;
+    
+    [Space]
+
+    [SerializeField] float groundMovementSpeed;
+    [SerializeField] float bridgeMovementSpeed;
+    private float currentMovementSpeed;
     [SerializeField] float angularSpeed;
     [SerializeField] float touchSensitivity;
 
@@ -17,7 +23,6 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] Transform carryBlockRoot;
 
-    private Rigidbody rb;
     private InputHandler inputHandler;
 
     private Vector3 targetRotation = Vector3.zero;
@@ -29,13 +34,15 @@ public class PlayerController : MonoBehaviour
     private bool playerIsDead = false;
     private bool gameStarted = false;
 
+
     private void Awake()
     {
-        rb = FindObjectOfType<Rigidbody>();
         inputHandler = GetComponent<InputHandler>();
 
         Global.CheckGroundUnderAction += CheckGroundUnder;
         Global.StartGameAction += StartGame;
+
+        currentMovementSpeed = groundMovementSpeed;
     }
 
     private void OnDestroy()
@@ -63,7 +70,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        transform.position += transform.forward * movementSpeed * Time.deltaTime;
+        transform.position += transform.forward * currentMovementSpeed * Time.deltaTime;
 
         targetRotation = Vector3.up * inputHandler.TouchRelative.x * touchSensitivity;
 
@@ -121,6 +128,8 @@ public class PlayerController : MonoBehaviour
 
         if (other.CompareTag("Ground"))
         {
+            currentMovementSpeed = groundMovementSpeed;
+
             groundColCount--;
 
             groundColCount = Mathf.Max(groundColCount, 0);
@@ -143,6 +152,8 @@ public class PlayerController : MonoBehaviour
                 block.SetMode(BlockMode.ground);
 
                 carryBlocks.RemoveAt(carryBlocks.Count - 1);
+
+                currentMovementSpeed = bridgeMovementSpeed;
             }
         }
     }
