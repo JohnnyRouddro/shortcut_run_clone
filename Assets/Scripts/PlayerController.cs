@@ -23,8 +23,15 @@ public class PlayerController : CharacterBehavior
     [SerializeField] float jumpAccel;
     [SerializeField] float jumpHeight;
     [SerializeField] float gravity;
+    
+    [Space]
+    
+    [SerializeField] float carryBlockWaveSpeed;
+    [SerializeField] float carryBlockWaveSize;
 
     private bool onAir = false;
+
+    private float carryBlockOffset;
 
 
     private void Start()
@@ -76,6 +83,18 @@ public class PlayerController : CharacterBehavior
             }
         }
 
+        carryBlockOffset = Mathf.Lerp(carryBlockOffset, inputHandler.TouchRelative.x, carryBlockWaveSpeed * Time.deltaTime) * carryBlockWaveSize;
+
+        for (int i = 0; i < carryBlocks.Count; i++)
+        {
+            Vector3 p = carryBlocks[i].carryBlock.transform.localPosition;
+
+            //p.x = Mathf.Sin(Time.time * carryBlockWaveSpeed) * i * i * carryBlockWaveSize;
+            p.x = -carryBlockOffset * i * i;
+
+            carryBlocks[i].carryBlock.transform.localPosition = p;
+        }
+
         if (characterIsDead)
         {
             return;
@@ -85,7 +104,9 @@ public class PlayerController : CharacterBehavior
         {
             if (groundColCount > 0 && carryBlocks.Count == 0)
             {
-                EndLevel();
+                characterAnim.SetBool("jumping", true);
+                characterAnim.SetBool("carrying", false);
+                characterAnim.SetBool("running", false);
             }
         }
 
@@ -143,9 +164,14 @@ public class PlayerController : CharacterBehavior
                     pos.y = 0;
                     transform.position = pos;
 
+                    
                     if (carryBlocks.Count > 0)
                     {
                         DropBlock();
+                    }
+                    else if (groundColCount <= 0)
+                    {
+                        Die();
                     }
                 }
             }

@@ -25,8 +25,28 @@ public class Global : MonoBehaviour
     public static Action CountDownStartedAction;
     public static Action StartGameAction;
     public static Action FinishLineTouchedAction;
+    
+    public bool stopCheckingFirstPosition;
 
-    public int currentLevelFinishMultiplier = 1;
+    private int currentLevelFinishMultiplier = 1;
+    
+    public int CurrentLevelFinishMultiplier
+    {
+        get
+        {
+            return currentLevelFinishMultiplier;
+        }
+
+        set
+        {
+            currentLevelFinishMultiplier = value;
+
+            //if (currentLevelFinishMultiplier == 15)
+            //{
+            //    LevelCompleteAction?.Invoke();
+            //}
+        }
+    }
 
     private Timer countDownTimer = new Timer();
 

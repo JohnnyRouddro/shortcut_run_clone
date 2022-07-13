@@ -13,7 +13,7 @@ public class BlockBehavior : MonoBehaviour
 {
     [SerializeField] GameObject pickupBlock;
     [SerializeField] GameObject groundBlock;
-    [SerializeField] GameObject carryBlock;
+    public GameObject carryBlock;
 
     private Animator animator;
 

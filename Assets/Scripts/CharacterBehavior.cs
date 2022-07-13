@@ -121,7 +121,7 @@ public class CharacterBehavior : MonoBehaviour
 
                 block.transform.SetParent(carryBlockRoot);
 
-                block.transform.localPosition = Vector3.zero + Vector3.up * carryBlocks.Count * 0.3f;
+                block.transform.localPosition = Vector3.zero + Vector3.up * carryBlocks.Count * 0.225f;
                 block.transform.localEulerAngles = Vector3.zero;
 
                 block.SetMode(BlockMode.carry);
@@ -144,6 +144,7 @@ public class CharacterBehavior : MonoBehaviour
                     transform.eulerAngles = Vector3.up * 180;
                     carryBlockRoot.gameObject.SetActive(false);
                     EndLevel();
+                    Global.Instance.stopCheckingFirstPosition = true;
                 }
             }
         }
@@ -155,7 +156,12 @@ public class CharacterBehavior : MonoBehaviour
 
                 if (isPlayer)
                 {
-                    Global.Instance.currentLevelFinishMultiplier = other.GetComponent<LevelFinishX>().multiplierValue;
+                    Global.Instance.CurrentLevelFinishMultiplier = other.GetComponent<LevelFinishX>().multiplierValue;
+
+                    if (Global.Instance.CurrentLevelFinishMultiplier == 15)
+                    {
+                        EndLevel();
+                    }
                 }
             }
         }
@@ -261,6 +267,8 @@ public class CharacterBehavior : MonoBehaviour
 
         characterAnim.SetBool("dancing", true);
 
+        carryBlockRoot.gameObject.SetActive(false);
+
         if (isPlayer)
         {
             Global.LevelCompleteAction?.Invoke();
@@ -275,6 +283,12 @@ public class CharacterBehavior : MonoBehaviour
             return;
         }
 
+        if (characterState == CharacterState.PostFinishLine)
+        {
+            EndLevel();
+            return;
+        }
+
         if (groundColCount == 0)
         {
             if (!currentMultiplierTransform)
@@ -283,14 +297,11 @@ public class CharacterBehavior : MonoBehaviour
                 return;
             }
 
-            if (characterState == CharacterState.PostFinishLine)
-            {
-                EndLevel();
-            }
-            else
+            if (characterState != CharacterState.PostFinishLine)
             {
                 Die();
             }
+            
 
         }
     }
