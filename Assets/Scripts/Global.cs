@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using JiRO;
 
 public class Global : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class Global : MonoBehaviour
     [SerializeField] GameObject levelFailedUI;
     [SerializeField] GameObject levelEndUI;
     
+    [SerializeField] TMP_Text countDownText;
+
     [SerializeField] TMP_Text rewardText;
 
     [SerializeField] TMP_Text debugText;
@@ -19,10 +22,13 @@ public class Global : MonoBehaviour
     public static Action LevelFailedAction;
     public static Action LevelCompleteAction;
     public static Action CheckGroundUnderAction;
+    public static Action CountDownStartedAction;
     public static Action StartGameAction;
     public static Action FinishLineTouchedAction;
 
     public int currentLevelFinishMultiplier = 1;
+
+    private Timer countDownTimer = new Timer();
 
     private void Awake()
     {
@@ -33,6 +39,8 @@ public class Global : MonoBehaviour
         LevelCompleteAction += LevelComplete;
 
         Application.targetFrameRate = 120;
+
+        countDownText.gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -58,10 +66,37 @@ public class Global : MonoBehaviour
         levelFailedUI.SetActive(false);
     }
 
+    public void StartCountDown()
+    {
+        if (!countDownTimer.finished)
+        {
+            return;
+        }
+
+        countDownTimer = Timer.CreateNew(gameObject, 3);
+        countDownTimer.OnFinished += StartGame;
+        countDownTimer.StartTimer();
+
+        countDownText.gameObject.SetActive(true);
+
+        levelStartUI.SetActive(false);
+        CountDownStartedAction?.Invoke();
+    }
+
+    private void Update()
+    {
+        if (countDownTimer.finished)
+        {
+            return;
+        }
+
+        countDownText.text = countDownTimer.timeLeft.ToString("F2");
+    }
+
     public void StartGame()
     {
+        countDownText.gameObject.SetActive(false);
         StartGameAction?.Invoke();
-        levelStartUI.SetActive(false);
     }
 
 

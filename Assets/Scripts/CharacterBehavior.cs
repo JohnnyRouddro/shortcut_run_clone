@@ -45,6 +45,8 @@ public class CharacterBehavior : MonoBehaviour
 
     protected Action<Collider> TriggerEnterAction;
     protected Action<Collider> TriggerExitAction;
+    protected Action OnDestroyAction;
+    protected Action GotOutOfBridgeAction;
 
     private void Awake()
     {
@@ -56,11 +58,13 @@ public class CharacterBehavior : MonoBehaviour
         currentMultiplierTransform = null;
     }
 
-    //private void OnDestroy()
-    //{
-    //    Global.CheckGroundUnderAction -= CheckGroundUnder;
-    //    Global.StartGameAction -= StartGame;
-    //}
+    private void OnDestroy()
+    {
+        Global.CheckGroundUnderAction -= CheckGroundUnder;
+        Global.StartGameAction -= StartGame;
+
+        OnDestroyAction?.Invoke();
+    }
 
     private void StartGame()
     {
@@ -83,6 +87,7 @@ public class CharacterBehavior : MonoBehaviour
         {
             return;
         }
+
         if (characterState == CharacterState.LevelRunning || characterState == CharacterState.PostFinishLine)
         {
             if (other.CompareTag("Ground"))
@@ -135,7 +140,7 @@ public class CharacterBehavior : MonoBehaviour
                 }
                 else
                 {
-                    transform.position += Vector3.forward * 5;
+                    transform.position = other.GetComponent<LevelFinisher>().GetDancePoint().position;
                     transform.eulerAngles = Vector3.up * 180;
                     carryBlockRoot.gameObject.SetActive(false);
                     EndLevel();
@@ -182,6 +187,8 @@ public class CharacterBehavior : MonoBehaviour
                 if (speedBoostColCount == 0)
                 {
                     currentMovementSpeed = groundMovementSpeed;
+
+                    GotOutOfBridgeAction?.Invoke();
                 }
             }
         }
@@ -220,22 +227,27 @@ public class CharacterBehavior : MonoBehaviour
             }
             else if (carryBlocks.Count > 0 && groundColCount == 0)
             {
-                BlockBehavior block = carryBlocks[carryBlocks.Count - 1];
-
-                block.transform.SetParent(null);
-
-                Vector3 newPos = block.transform.position;
-                newPos.y = 0;
-                block.transform.position = newPos;
-
-                block.SetMode(BlockMode.ground);
-
-                carryBlocks.RemoveAt(carryBlocks.Count - 1);
-
-                currentMovementSpeed = bridgeMovementSpeed;
+                DropBlock();
             }
         }
 
+    }
+
+    protected void DropBlock()
+    {
+        BlockBehavior block = carryBlocks[carryBlocks.Count - 1];
+
+        block.transform.SetParent(null);
+
+        Vector3 newPos = block.transform.position;
+        newPos.y = 0;
+        block.transform.position = newPos;
+
+        block.SetMode(BlockMode.ground);
+
+        carryBlocks.RemoveAt(carryBlocks.Count - 1);
+
+        currentMovementSpeed = bridgeMovementSpeed;
     }
 
     protected void EndLevel()
@@ -258,6 +270,11 @@ public class CharacterBehavior : MonoBehaviour
 
     public void CheckGroundUnder()
     {
+        if (transform.position.y > 2)
+        {
+            return;
+        }
+
         if (groundColCount == 0)
         {
             if (!currentMultiplierTransform)
@@ -278,7 +295,7 @@ public class CharacterBehavior : MonoBehaviour
         }
     }
 
-    private void Die()
+    protected void Die()
     {
         //playerAnim.Play("Player Die", -1, 0);
         characterAnim.SetBool("dead", true);

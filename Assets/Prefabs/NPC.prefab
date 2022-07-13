@@ -96,7 +96,7 @@ Transform:
   m_Children:
   - {fileID: 8679271926771573422}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &8679271927270782755
 Rigidbody:
@@ -140,8 +140,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPlayer: 0
-  groundMovementSpeed: 15
-  bridgeMovementSpeed: 30
+  groundMovementSpeed: 12
+  bridgeMovementSpeed: 22
   angularSpeed: 10
   touchSensitivity: 0.25
   characterAnim: {fileID: 8679271927726021308}

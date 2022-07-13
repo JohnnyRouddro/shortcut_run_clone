@@ -4,9 +4,21 @@ using UnityEngine;
 
 public class LevelFinisher : MonoBehaviour
 {
+    [SerializeField] List<GameObject> dancePoints;
+    private int currentDancePoint = 0;
+
     [SerializeField] List<LevelFinishX> multipliers;
 
     [SerializeField] List<Color> multiplierBgColor;
+
+    public Transform GetDancePoint()
+    {
+        Transform t = dancePoints[currentDancePoint].transform;
+
+        currentDancePoint++;
+
+        return t;
+    }
 
     private void Awake()
     {
