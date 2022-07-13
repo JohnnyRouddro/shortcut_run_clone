@@ -27,16 +27,18 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 targetRotation = Vector3.zero;
 
-    private int groundColCount = 0;
+    private int groundColCount = 1;
 
     private List<BlockBehavior> carryBlocks = new List<BlockBehavior>();
 
     private bool playerIsDead = false;
     private bool gameStarted = false;
 
+    private Rigidbody rb;
 
     private void Awake()
     {
+        rb = GetComponent<Rigidbody>();
         inputHandler = GetComponent<InputHandler>();
 
         Global.CheckGroundUnderAction += CheckGroundUnder;
@@ -77,6 +79,8 @@ public class PlayerController : MonoBehaviour
         transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, transform.eulerAngles + targetRotation, angularSpeed * Time.deltaTime);
 
         targetRotation = transform.eulerAngles;
+
+        Global.Instance.DebugText(groundColCount.ToString());
     }
 
     private void OnTriggerEnter(Collider other)

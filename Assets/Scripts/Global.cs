@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Global : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class Global : MonoBehaviour
     [SerializeField] GameObject levelStartUI;
     [SerializeField] GameObject levelFailedUI;
 
+    [SerializeField] TMP_Text debugText;
 
     public static Action LevelFailedAction;
     public static Action CheckGroundUnderAction;
@@ -22,6 +24,8 @@ public class Global : MonoBehaviour
         //DontDestroyOnLoad(gameObject);
 
         LevelFailedAction += LevelFailed;
+
+        Application.targetFrameRate = 120;
     }
 
     private void OnDestroy()
@@ -44,5 +48,11 @@ public class Global : MonoBehaviour
     {
         StartGameAction?.Invoke();
         levelStartUI.SetActive(false);
+    }
+
+
+    public void DebugText(string text)
+    {
+        debugText.text = text;
     }
 }
