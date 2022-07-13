@@ -46,6 +46,8 @@ public class PlayerController : CharacterBehavior
         OnDestroyAction += OnBaseDestroy;
 
         TriggerEnterAction += TriggerEnter;
+
+        touchSensitivity = touchSensitivity / Screen.width * 10;
     }
 
     private void OnBaseDestroy()
@@ -83,7 +85,7 @@ public class PlayerController : CharacterBehavior
             }
         }
 
-        carryBlockOffset = Mathf.Lerp(carryBlockOffset, inputHandler.TouchRelative.x, carryBlockWaveSpeed * Time.deltaTime) * carryBlockWaveSize;
+        carryBlockOffset = Mathf.Lerp(carryBlockOffset, inputHandler.TouchRelative.x * touchSensitivity, carryBlockWaveSpeed * Time.deltaTime) * carryBlockWaveSize;
 
         for (int i = 0; i < carryBlocks.Count; i++)
         {

@@ -12341,7 +12341,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 0.5, y: 1}
+    m_SensorSize: {x: 0.5625, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -47364,7 +47364,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1176666459}
-  m_LocalRotation: {x: 0.18779397, y: 0.000000014636047, z: -0.0000000027983482, w: 0.98220843}
+  m_LocalRotation: {x: 0.18779399, y: 0.000000005179082, z: -9.90218e-10, w: 0.98220843}
   m_LocalPosition: {x: 1.95, y: 8.8, z: -22.84}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -47402,7 +47402,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 0.5, y: 1}
+    m_SensorSize: {x: 0.5625, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -49775,7 +49775,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 0.5, y: 1}
+    m_SensorSize: {x: 0.5625, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -68784,7 +68784,7 @@ MonoBehaviour:
   groundMovementSpeed: 15
   bridgeMovementSpeed: 30
   angularSpeed: 10
-  touchSensitivity: 0.3
+  touchSensitivity: 51
   characterAnim: {fileID: 44488202}
   carryBlockRoot: {fileID: 1803313357}
   playerMesh: {fileID: 102038450}
@@ -68794,8 +68794,8 @@ MonoBehaviour:
   jumpAccel: 4
   jumpHeight: 50
   gravity: 30
-  carryBlockWaveSpeed: 0.3
-  carryBlockWaveSize: 0.0004
+  carryBlockWaveSpeed: 0.15
+  carryBlockWaveSize: 0.005
 --- !u!114 &1712964813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76715,7 +76715,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 0.5, y: 1}
+    m_SensorSize: {x: 0.5625, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -77939,7 +77939,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1961809277}
-  m_LocalRotation: {x: 0.18779397, y: 0.000000014636047, z: -0.0000000027983482, w: 0.98220843}
+  m_LocalRotation: {x: 0.18779399, y: 0.000000005179082, z: -9.90218e-10, w: 0.98220843}
   m_LocalPosition: {x: 1.95, y: 8.8, z: -22.84}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
