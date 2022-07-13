@@ -4,15 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public enum GameState
-{
-    PreGame,
-    LevelRunning,
-    PostFinishLine,
-    LevelEnded
-}
-
-
 public class Global : MonoBehaviour
 {
     public static Global Instance { get; private set; }
@@ -32,8 +23,6 @@ public class Global : MonoBehaviour
     public static Action FinishLineTouchedAction;
 
     public int currentLevelFinishMultiplier = 1;
-
-    public GameState gameState = GameState.PreGame;
 
     private void Awake()
     {
@@ -71,8 +60,6 @@ public class Global : MonoBehaviour
 
     public void StartGame()
     {
-        gameState = GameState.LevelRunning;
-
         StartGameAction?.Invoke();
         levelStartUI.SetActive(false);
     }

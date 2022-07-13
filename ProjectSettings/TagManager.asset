@@ -5,14 +5,18 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - PickupBlock
+  - SpeedBoost
+  - Multiplier
+  - NPC Road Guide
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - NPC Guidance
   - Water
   - UI
-  - 
+  - NPC
   - 
   - 
   - 
