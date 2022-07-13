@@ -6,6 +6,7 @@ using Cinemachine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private CinemachineVirtualCamera vCam;
+    [SerializeField] private CinemachineVirtualCamera vCam2;
     
     [Space]
 
@@ -28,13 +29,15 @@ public class PlayerController : MonoBehaviour
     private Vector3 targetRotation = Vector3.zero;
 
     private int groundColCount = 1;
+    private int speedBoostColCount = 0;
 
     private List<BlockBehavior> carryBlocks = new List<BlockBehavior>();
 
     private bool playerIsDead = false;
-    private bool gameStarted = false;
 
     private Rigidbody rb;
+
+    private Transform currentMultiplierTransform;
 
     private void Awake()
     {
@@ -45,6 +48,8 @@ public class PlayerController : MonoBehaviour
         Global.StartGameAction += StartGame;
 
         currentMovementSpeed = groundMovementSpeed;
+
+        currentMultiplierTransform = null;
     }
 
     private void OnDestroy()
@@ -55,8 +60,6 @@ public class PlayerController : MonoBehaviour
 
     private void StartGame()
     {
-        gameStarted = true;
-
         playerAnim.SetBool("running", true);
     }
 
@@ -67,20 +70,37 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (!gameStarted)
+        if (Global.Instance.gameState == GameState.PostFinishLine)
         {
-            return;
+            if (groundColCount > 0 && carryBlocks.Count == 0)
+            {
+                EndLevel();
+            }
         }
 
-        transform.position += transform.forward * currentMovementSpeed * Time.deltaTime;
+        if (Global.Instance.gameState == GameState.LevelRunning || Global.Instance.gameState == GameState.PostFinishLine)
+        {
+            transform.position += transform.forward * currentMovementSpeed * Time.deltaTime;
 
-        targetRotation = Vector3.up * inputHandler.TouchRelative.x * touchSensitivity;
+            targetRotation = Vector3.up * inputHandler.TouchRelative.x * touchSensitivity;
 
-        transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, transform.eulerAngles + targetRotation, angularSpeed * Time.deltaTime);
+            transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, transform.eulerAngles + targetRotation, angularSpeed * Time.deltaTime);
 
-        targetRotation = transform.eulerAngles;
+            targetRotation = transform.eulerAngles;
 
-        Global.Instance.DebugText(groundColCount.ToString());
+            //Global.Instance.DebugText(groundColCount.ToString());
+        }
+        else if (Global.Instance.gameState == GameState.LevelEnded)
+        {
+            transform.position = Vector3.Lerp(transform.position, currentMultiplierTransform.position, 5f * Time.deltaTime);
+
+            Vector3 rot = transform.eulerAngles;
+
+            rot.y = Mathf.LerpAngle(rot.y, 180, 5f * Time.deltaTime);
+
+            transform.eulerAngles = rot;
+        }
+
     }
 
     private void OnTriggerEnter(Collider other)
@@ -90,32 +110,68 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (!gameStarted)
+        if (Global.Instance.gameState == GameState.LevelEnded)
         {
             return;
         }
 
-        if (other.CompareTag("Ground"))
+        if (Global.Instance.gameState == GameState.LevelRunning)
         {
-            playerAnim.SetBool("jumping", false);
-            playerAnim.SetBool("running", true);
+            if (other.CompareTag("SpeedBoost"))
+            {
+                currentMovementSpeed = bridgeMovementSpeed;
 
-            groundColCount++;
+                speedBoostColCount++;
+            }
+
+            if (other.CompareTag("Ground"))
+            {
+                playerAnim.SetBool("jumping", false);
+                playerAnim.SetBool("running", true);
+
+                if (carryBlocks.Count == 0)
+                {
+                    playerAnim.SetBool("carrying", false);
+                }
+
+                groundColCount++;
+            }
+
+            if (other.CompareTag("PickupBlock"))
+            {
+                playerAnim.SetBool("carrying", true);
+
+                BlockBehavior block = other.transform.parent.GetComponent<BlockBehavior>();
+
+                block.transform.SetParent(carryBlockRoot);
+
+                block.transform.localPosition = Vector3.zero + Vector3.up * carryBlocks.Count * 0.3f;
+                block.transform.localEulerAngles = Vector3.zero;
+
+                block.SetMode(BlockMode.carry);
+
+                carryBlocks.Add(block);
+            }
+
+            if (other.CompareTag("Finish"))
+            {
+                Global.Instance.gameState = GameState.PostFinishLine;
+
+                currentMovementSpeed = bridgeMovementSpeed;
+
+                Global.FinishLineTouchedAction?.Invoke();
+            }
+        }
+        else if (Global.Instance.gameState == GameState.PostFinishLine)
+        {
+            if (other.CompareTag("Multiplier"))
+            {
+                currentMultiplierTransform = other.transform;
+
+                Global.Instance.currentLevelFinishMultiplier = other.GetComponent<LevelFinishX>().multiplierValue;
+            }
         }
 
-        if (other.CompareTag("PickupBlock"))
-        {
-            BlockBehavior block = other.transform.parent.GetComponent<BlockBehavior>();
-
-            block.transform.SetParent(carryBlockRoot);
-
-            block.transform.localPosition = Vector3.zero + Vector3.up * carryBlocks.Count * 0.3f;
-            block.transform.localEulerAngles = Vector3.zero;
-
-            block.SetMode(BlockMode.carry);
-
-            carryBlocks.Add(block);
-        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -125,14 +181,32 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (!gameStarted)
+        if (Global.Instance.gameState == GameState.LevelEnded)
         {
             return;
+        }
+        
+        if (Global.Instance.gameState == GameState.LevelRunning)
+        {
+            if (other.CompareTag("SpeedBoost"))
+            {
+                speedBoostColCount--;
+
+                speedBoostColCount = Mathf.Max(speedBoostColCount, 0);
+
+                if (speedBoostColCount == 0)
+                {
+                    currentMovementSpeed = groundMovementSpeed;
+                }
+            }
         }
 
         if (other.CompareTag("Ground"))
         {
-            currentMovementSpeed = groundMovementSpeed;
+            //if (Global.Instance.gameState == GameState.LevelRunning)
+            //{
+            //    currentMovementSpeed = groundMovementSpeed;
+            //}
 
             groundColCount--;
 
@@ -140,8 +214,24 @@ public class PlayerController : MonoBehaviour
 
             if (carryBlocks.Count == 0 && groundColCount == 0)
             {
-                playerAnim.SetBool("running", false);
-                playerAnim.SetBool("jumping", true);
+                if (Global.Instance.gameState == GameState.LevelRunning)
+                {
+                    playerAnim.SetBool("running", false);
+                    playerAnim.SetBool("carrying", false);
+                    playerAnim.SetBool("jumping", true);
+                }
+                else if (Global.Instance.gameState == GameState.PostFinishLine)
+                {
+                    playerAnim.SetBool("running", false);
+                    playerAnim.SetBool("carrying", false);
+                    playerAnim.SetBool("jumping", true);
+                }
+                else if (Global.Instance.gameState == GameState.LevelEnded)
+                {
+                    playerAnim.SetBool("carrying", false);
+                    playerAnim.SetBool("running", true);
+                }
+
             }
             else if (carryBlocks.Count > 0 && groundColCount == 0)
             {
@@ -160,6 +250,23 @@ public class PlayerController : MonoBehaviour
                 currentMovementSpeed = bridgeMovementSpeed;
             }
         }
+
+    }
+
+    private void EndLevel()
+    {
+        Global.Instance.gameState = GameState.LevelEnded;
+
+        playerAnim.SetBool("dead", false);
+        playerAnim.SetBool("jumping", false);
+        playerAnim.SetBool("carrying", false);
+        playerAnim.SetBool("running", false);
+
+        playerAnim.SetBool("dancing", true);
+
+        vCam2.Priority = 2;
+
+        Global.LevelCompleteAction?.Invoke();
     }
 
 
@@ -167,14 +274,31 @@ public class PlayerController : MonoBehaviour
     {
         if (groundColCount == 0)
         {
-            Die();
+            if (!currentMultiplierTransform)
+            {
+                Die();
+                return;
+            }
+
+            if (Global.Instance.gameState == GameState.PostFinishLine)
+            {
+                EndLevel();
+            }
+            else
+            {
+                Die();
+            }
+
         }
     }
 
     private void Die()
     {
-        playerAnim.Play("Player Die", -1, 0);
+        //playerAnim.Play("Player Die", -1, 0);
+        playerAnim.SetBool("dead", true);
+
         playerAnim.SetBool("jumping", false);
+        playerAnim.SetBool("carrying", false);
         playerAnim.SetBool("running", false);
 
         playerIsDead = true;

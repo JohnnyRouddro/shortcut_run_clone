@@ -4,19 +4,36 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+public enum GameState
+{
+    PreGame,
+    LevelRunning,
+    PostFinishLine,
+    LevelEnded
+}
+
+
 public class Global : MonoBehaviour
 {
     public static Global Instance { get; private set; }
 
     [SerializeField] GameObject levelStartUI;
     [SerializeField] GameObject levelFailedUI;
+    [SerializeField] GameObject levelEndUI;
+    
+    [SerializeField] TMP_Text rewardText;
 
     [SerializeField] TMP_Text debugText;
 
     public static Action LevelFailedAction;
+    public static Action LevelCompleteAction;
     public static Action CheckGroundUnderAction;
     public static Action StartGameAction;
+    public static Action FinishLineTouchedAction;
 
+    public int currentLevelFinishMultiplier = 1;
+
+    public GameState gameState = GameState.PreGame;
 
     private void Awake()
     {
@@ -24,6 +41,7 @@ public class Global : MonoBehaviour
         //DontDestroyOnLoad(gameObject);
 
         LevelFailedAction += LevelFailed;
+        LevelCompleteAction += LevelComplete;
 
         Application.targetFrameRate = 120;
     }
@@ -31,12 +49,19 @@ public class Global : MonoBehaviour
     private void OnDestroy()
     {
         LevelFailedAction -= LevelFailed;
+        LevelCompleteAction -= LevelComplete;
     }
 
 
     private void LevelFailed()
     {
         levelFailedUI.SetActive(true);
+    }
+
+    private void LevelComplete()
+    {
+        levelEndUI.SetActive(true);
+        rewardText.text = "Get X" + currentLevelFinishMultiplier.ToString();
     }
 
     public void LevelRestart()
@@ -46,6 +71,8 @@ public class Global : MonoBehaviour
 
     public void StartGame()
     {
+        gameState = GameState.LevelRunning;
+
         StartGameAction?.Invoke();
         levelStartUI.SetActive(false);
     }
