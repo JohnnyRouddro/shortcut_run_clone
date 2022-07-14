@@ -9,11 +9,15 @@ public class Global : MonoBehaviour
 {
     public static Global Instance { get; private set; }
 
+    [SerializeField] List<Transform> NpcList;
+    [SerializeField] Transform player;
+
     [SerializeField] GameObject levelStartUI;
     [SerializeField] GameObject levelFailedUI;
     [SerializeField] GameObject levelEndUI;
     
     [SerializeField] TMP_Text countDownText;
+    [SerializeField] TMP_Text playerPositionText;
 
     [SerializeField] TMP_Text rewardText;
 
@@ -105,6 +109,38 @@ public class Global : MonoBehaviour
 
     private void Update()
     {
+        if (!stopCheckingFirstPosition)
+        {
+            int passCount = 0;
+
+            for (int i = 0; i < NpcList.Count; i++)
+            {
+                if (player.transform.position.z > NpcList[i].position.z)
+                {
+                    passCount++;
+                }
+            }
+
+            if (passCount == 3)
+            {
+                playerPositionText.text = "1st";
+            }
+            else if (passCount == 2)
+            {
+                playerPositionText.text = "2nd";
+            }
+            else if (passCount == 1)
+            {
+                playerPositionText.text = "3rd";
+            }
+            else
+            {
+                playerPositionText.text = "4th";
+            }
+        }
+
+
+
         if (countDownTimer.finished)
         {
             return;
@@ -116,6 +152,8 @@ public class Global : MonoBehaviour
     public void StartGame()
     {
         countDownText.gameObject.SetActive(false);
+        playerPositionText.gameObject.SetActive(true);
+
         StartGameAction?.Invoke();
     }
 

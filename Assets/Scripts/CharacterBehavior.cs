@@ -133,10 +133,20 @@ public class CharacterBehavior : MonoBehaviour
             {
                 characterState = CharacterState.PostFinishLine;
 
+                currentMultiplierTransform = other.transform;
+
                 if (isPlayer)
                 {
                     currentMovementSpeed = bridgeMovementSpeed;
                     Global.FinishLineTouchedAction?.Invoke();
+
+                    if (carryBlocks.Count == 0)
+                    {
+                        transform.position = other.GetComponent<LevelFinisher>().GetDancePoint().position;
+                        transform.eulerAngles = Vector3.up * 180;
+
+                        EndLevel();
+                    }
                 }
                 else
                 {
